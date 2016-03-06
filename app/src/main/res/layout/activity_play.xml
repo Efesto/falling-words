@@ -2,49 +2,94 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#0099cc"
+    android:background="#ffffff"
     tools:context="efestoarts.fallingwords.PlayActivity">
-
-    <!-- The primary full-screen view. This can be replaced with whatever view
-         is needed to present your content, e.g. VideoView, SurfaceView,
-         TextureView, etc. -->
-    <TextView
-        android:id="@+id/fullscreen_content"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:keepScreenOn="true"
-        android:text="@string/dummy_content"
-        android:textColor="#33b5e5"
-        android:textSize="50sp"
-        android:textStyle="bold" />
+        android:background="@color/colorPrimaryDark"
+        android:gravity="center_vertical"
+        android:padding="7dp"
+        android:layout_height="wrap_content">
 
-    <!-- This FrameLayout insets its children based on system windows using
-         android:fitsSystemWindows. -->
-    <FrameLayout
+        <TextView android:id="@+id/game_stats"
+            android:textSize="@dimen/primary_text_size"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:text="5/10"
+            />
+
+        <TextView android:id="@+id/right_words_counter"
+            android:textSize="@dimen/primary_text_size"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:textColor="@android:color/holo_green_dark"
+            android:text="3"
+            />
+
+        <TextView android:id="@+id/wrong_words_counter"
+            android:textSize="@dimen/primary_text_size"
+            android:layout_toLeftOf="@id/right_words_counter"
+            android:layout_toStartOf="@id/right_words_counter"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_marginEnd="7dp"
+            android:layout_marginRight="7dp"
+            android:textColor="@android:color/holo_red_dark"
+            android:text="6"
+            />
+    </RelativeLayout>
+
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fitsSystemWindows="true">
+        android:layout_height="match_parent">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/challenge_text"
+            android:textSize="@dimen/primary_text_size"
+            android:layout_centerInParent="true"
+            android:text="This is a word"/>
 
         <LinearLayout
-            android:id="@+id/fullscreen_content_controls"
-            style="?metaButtonBarStyle"
+            android:id="@+id/buttons_panel"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|center_horizontal"
-            android:background="@color/black_overlay"
+            android:layout_height="60dp"
+            android:layout_alignParentBottom="true"
+            android:background="@color/colorPrimaryDark"
             android:orientation="horizontal"
             tools:ignore="UselessParent">
 
             <Button
-                android:id="@+id/dummy_button"
-                style="?metaButtonBarButtonStyle"
+                android:id="@+id/wrong_button"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/dummy_button" />
+                android:layout_height="match_parent"
+                android:layout_weight="0.5"
+                android:text="That's wrong!" />
+
+
+            <Button
+                android:id="@+id/right_button"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.5"
+                android:text="That's Right!" />
 
         </LinearLayout>
-    </FrameLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/translation_text"
+            android:gravity="center"
+            android:padding="7dp"
+            android:textSize="@dimen/primary_text_size"
+            android:background="@color/colorAccent"
+            android:layout_above="@id/buttons_panel"
+            android:text='"Questa è una parola"'
+            />
+    </RelativeLayout>
 
 </FrameLayout>

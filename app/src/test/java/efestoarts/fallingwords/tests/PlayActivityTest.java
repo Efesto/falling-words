@@ -1,6 +1,6 @@
 package efestoarts.fallingwords.tests;
 
-import junit.framework.Assert;
+import android.widget.TextView;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -9,7 +9,6 @@ import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.annotation.Config;
 
 import efestoarts.fallingwords.*;
-
 import static junit.framework.Assert.*;
 
 @RunWith(RobolectricGradleTestRunner.class)
@@ -21,8 +20,8 @@ public class PlayActivityTest {
     {
         PlayActivity activity = Robolectric.setupActivity(PlayActivity.class);
 
-        assertNotNull(activity);
-
+        assertEquals("primary school", ((TextView)activity.findViewById(R.id.translation_text)).getText());
+        assertEquals("escuela primaria", ((TextView)activity.findViewById(R.id.challenge_text)).getText());
     }
 
 }

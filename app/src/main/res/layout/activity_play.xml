@@ -11,11 +11,11 @@
         android:padding="7dp"
         android:layout_height="wrap_content">
 
-        <TextView android:id="@+id/game_stats"
+        <TextView android:id="@+id/rounds_counter"
             android:textSize="@dimen/primary_text_size"
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
-            android:text="5/10"
+            android:text="5"
             />
 
         <TextView android:id="@+id/right_words_counter"

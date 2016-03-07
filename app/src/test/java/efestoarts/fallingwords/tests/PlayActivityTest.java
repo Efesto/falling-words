@@ -35,20 +35,20 @@ public class PlayActivityTest {
     private Translation correctTranslation;
     private Translation wrongTranslation;
 
+    private void initActivity() throws JSONException {
+        activity = spy(Robolectric.setupActivity(PlayActivity.class));
+        translations = mock(Translations.class);
+        doReturn(translations).when(activity).getTranslations();
+    }
+
     @Before
     public void before() throws JSONException {
         initActivity();
 
         correctTranslation = new Translation("Challenge word", "Translated word", true);
         wrongTranslation = new Translation("Challenge word", "Translated word", false);
-        doReturn(new Delay(10000)).when(activity).roundTimer();
-        doReturn(new Delay(100)).when(activity).betweenRoundsTimer();
-    }
-
-    private void initActivity() throws JSONException {
-        activity = spy(Robolectric.setupActivity(PlayActivity.class));
-        translations = mock(Translations.class);
-        doReturn(translations).when(activity).getTranslations();
+        doReturn(new Delay(10)).when(activity).roundTimer();
+        doReturn(new Delay(10)).when(activity).betweenRoundsTimer();
     }
 
     @Test

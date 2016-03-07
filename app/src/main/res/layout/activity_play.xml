@@ -48,7 +48,6 @@
             android:gravity="center"
             android:padding="7dp"
             android:textSize="@dimen/primary_text_size"
-            android:background="@color/colorAccent"
             android:layout_below="@id/rounds_counter"
             android:text='"Questa è una parola"'
             />

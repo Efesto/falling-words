@@ -91,6 +91,9 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
             currentTranslation = getTranslations().getTranslation();
         } catch (JSONException e) {
             e.printStackTrace();
+
+            //We don't like code that doesn't says what's wrong
+            throw new RuntimeException(e);
         }
 
         findViewById(R.id.right_button).setOnClickListener(this);
@@ -111,6 +114,8 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
             words = IOUtils.toString(inputStream);
         } catch (IOException e) {
             e.printStackTrace();
+            //We don't like code that doesn't says what's wrong
+            throw new RuntimeException(e);
         } finally {
             IOUtils.closeQuietly(inputStream);
         }

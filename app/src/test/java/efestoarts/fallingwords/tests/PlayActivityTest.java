@@ -47,7 +47,7 @@ public class PlayActivityTest {
 
         correctTranslation = new Translation("Challenge word", "Translated word", true);
         wrongTranslation = new Translation("Challenge word", "Translated word", false);
-        doReturn(new Delay(0)).when(activity).betweenRoundsTimer();
+        when(activity.betweenRoundsTimer()).thenReturn(new Delay(10));
     }
 
     @Test

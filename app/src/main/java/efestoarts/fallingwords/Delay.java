@@ -19,7 +19,6 @@ public class Delay extends AsyncTask<Void, Void, Void> {
     protected void onPreExecute() {
         endTime = Calendar.getInstance();
         endTime.add(Calendar.MILLISECOND, milliseconds);
-
     }
 
     @Override

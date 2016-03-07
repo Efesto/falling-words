@@ -1,9 +1,7 @@
 package efestoarts.fallingwords;
 
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -32,7 +30,6 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
 
         setContentView(R.layout.activity_play);
 
-
         challengeWord = (TextView) findViewById(R.id.challenge_text);
 
         roundsCounter = (TextView) findViewById(R.id.rounds_counter);
@@ -47,16 +44,15 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         fallingWordAnimation.setAnimationListener(new Animation.AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
-
             }
 
             @Override
             public void onAnimationEnd(Animation animation) {
                 if (roundIsPlaying) {
                     if (currentTranslation.isCorrect) {
-                        increaseCounter(wrongsCounter);
+                        increaseTextViewCounter(wrongsCounter);
                     } else {
-                        increaseCounter(rightsCounter);
+                        increaseTextViewCounter(rightsCounter);
                     }
 
                     endRound();
@@ -65,7 +61,6 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
 
             @Override
             public void onAnimationRepeat(Animation animation) {
-
             }
         });
 
@@ -89,7 +84,7 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         roundIsPlaying = true;
         findViewById(R.id.right_button).setEnabled(true);
 
-        increaseCounter(roundsCounter);
+        increaseTextViewCounter(roundsCounter);
 
         currentTranslation = null;
         try {
@@ -105,10 +100,6 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         challengeWord.startAnimation(fallingWordAnimation);
 
         ((TextView) findViewById(R.id.translation_text)).setText(currentTranslation.translatedWord);
-    }
-
-    private void increaseCounter(TextView counterView) {
-        counterView.setText(String.format("%d", Integer.parseInt((String) counterView.getText()) + 1));
     }
 
     public Translations getTranslations() throws JSONException {
@@ -130,15 +121,15 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onClick(View v) {
         if (currentTranslation.isCorrect) {
-            increaseCounter(rightsCounter);
+            increaseTextViewCounter(rightsCounter);
         } else {
-            increaseCounter(wrongsCounter);
+            increaseTextViewCounter(wrongsCounter);
         }
 
         endRound();
     }
 
-    //AsyncTask can be executed only once
+    //AsyncTask can be executed only once so we need to build a new one every time we need one
     public Delay betweenRoundsTimer() {
         return new Delay(1000) {
             @Override
@@ -146,5 +137,9 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
                 nextRound();
             }
         };
+    }
+
+    private void increaseTextViewCounter(TextView counterView) {
+        counterView.setText(String.format("%d", Integer.parseInt((String) counterView.getText()) + 1));
     }
 }

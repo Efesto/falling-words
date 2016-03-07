@@ -1,5 +1,6 @@
 package efestoarts.fallingwords.tests;
 
+import android.view.View;
 import android.widget.TextView;
 
 import org.json.JSONException;
@@ -10,81 +11,146 @@ import org.robolectric.Robolectric;
 import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.annotation.Config;
 
-import efestoarts.fallingwords.*;
-import static junit.framework.Assert.*;
-import static org.mockito.Mockito.*;
+import efestoarts.fallingwords.BuildConfig;
+import efestoarts.fallingwords.Delay;
+import efestoarts.fallingwords.PlayActivity;
+import efestoarts.fallingwords.R;
+import efestoarts.fallingwords.Translation;
+import efestoarts.fallingwords.Translations;
+
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertTrue;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 
 @RunWith(RobolectricGradleTestRunner.class)
-@Config(sdk=21, constants = BuildConfig.class)
+@Config(sdk = 21, constants = BuildConfig.class)
 public class PlayActivityTest {
 
     PlayActivity activity;
+    private Translations translations;
+    private Translation correctTranslation;
+    private Translation wrongTranslation;
 
     @Before
-    public void before() {
+    public void before() throws JSONException {
+        initActivity();
+
+        correctTranslation = new Translation("Challenge word", "Translated word", true);
+        wrongTranslation = new Translation("Challenge word", "Translated word", false);
+        doReturn(new Delay(10000)).when(activity).roundTimer();
+        doReturn(new Delay(100)).when(activity).betweenRoundsTimer();
+    }
+
+    private void initActivity() throws JSONException {
         activity = spy(Robolectric.setupActivity(PlayActivity.class));
+        translations = mock(Translations.class);
+        doReturn(translations).when(activity).getTranslations();
     }
 
     @Test
     public void appearance() throws JSONException {
 
-        Translation translation = new Translation("Challenge word", "Translated word", true);
-        setNextTranslation(translation);
+        when(translations.getTranslation()).thenReturn(
+                correctTranslation
+        );
 
         activity.nextRound();
 
         assertRightWordsCounterIs("0");
         assertWrongWordsCounterIs("0");
-        assertRoundsCounterIs("0");
+        assertRoundsCounterIs("2");
         assertEquals("Translated word", ((TextView) activity.findViewById(R.id.translation_text)).getText());
         assertEquals("Challenge word", ((TextView) activity.findViewById(R.id.challenge_text)).getText());
     }
 
     @Test
     public void rightButton() throws JSONException {
-        Translation translation = new Translation("Challenge word", "Translated word", true);
-        setNextTranslation(translation);
+        when(translations.getTranslation()).thenReturn(
+                correctTranslation,
+                wrongTranslation
+        );
+
         activity.nextRound();
 
-        activity.findViewById(R.id.right_button).performClick();
+        isCorrectButton().performClick();
 
         assertRightWordsCounterIs("1");
         assertWrongWordsCounterIs("0");
-        assertRoundsCounterIs("1");
-
-        translation = new Translation("Challenge word", "Translated word", false);
-        setNextTranslation(translation);
+        assertRoundsCounterIs("2");
         activity.nextRound();
 
-        activity.findViewById(R.id.right_button).performClick();
+        isCorrectButton().performClick();
 
         assertRightWordsCounterIs("1");
         assertWrongWordsCounterIs("1");
-        assertRoundsCounterIs("2");
+        assertRoundsCounterIs("3");
     }
 
+    @Test
+    public void timeDelays() throws JSONException, InterruptedException {
+
+        initActivity();
+
+        when(translations.getTranslation()).thenReturn(
+                correctTranslation,
+                correctTranslation
+        );
+
+        activity.nextRound();
+
+        isCorrectButton().performClick();
+        assertFalse(isCorrectButton().isEnabled());
+        assertFalse(isWrongButton().isEnabled());
+        Thread.sleep(1100);
+
+        assertRoundsCounterIs("3");
+        assertTrue(isCorrectButton().isEnabled());
+        assertTrue(isWrongButton().isEnabled());
+
+        Thread.sleep(3000);
+        assertFalse(isCorrectButton().isEnabled());
+        assertFalse(isWrongButton().isEnabled());
+
+        assertRoundsCounterIs("4");
+        assertWrongWordsCounterIs("3");
+        assertRightWordsCounterIs("1");
+    }
+
+    private View isCorrectButton() {
+        return activity.findViewById(R.id.right_button);
+    }
 
     @Test
     public void wrongButton() throws JSONException {
-        Translation translation = new Translation("Challenge word", "Translated word", true);
-        setNextTranslation(translation);
+
+        when(translations.getTranslation()).thenReturn(
+                correctTranslation,
+                wrongTranslation
+        );
+
         activity.nextRound();
 
-        activity.findViewById(R.id.wrong_button).performClick();
+        isWrongButton().performClick();
 
         assertRightWordsCounterIs("0");
         assertWrongWordsCounterIs("1");
-        assertRoundsCounterIs("1");
+        assertRoundsCounterIs("2");
 
-        translation = new Translation("Challenge word", "Translated word", false);
-        setNextTranslation(translation);
         activity.nextRound();
 
-        activity.findViewById(R.id.wrong_button).performClick();
+        isWrongButton().performClick();
 
         assertRightWordsCounterIs("1");
         assertWrongWordsCounterIs("1");
-        assertRoundsCounterIs("2");
+        assertRoundsCounterIs("3");
+    }
+
+    private View isWrongButton() {
+        return activity.findViewById(R.id.wrong_button);
     }
 
     private void assertRightWordsCounterIs(String expected) {
@@ -97,12 +163,6 @@ public class PlayActivityTest {
 
     private void assertRoundsCounterIs(String expected) {
         assertEquals(expected, ((TextView) activity.findViewById(R.id.rounds_counter)).getText());
-    }
-
-    private void setNextTranslation(Translation translation) throws JSONException {
-        Translations translations = mock(Translations.class);
-        doReturn(translation).when(translations).getTranslation();
-        doReturn(translations).when(activity).getTranslations();
     }
 
 

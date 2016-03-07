@@ -1,7 +1,9 @@
 package efestoarts.fallingwords;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -12,12 +14,13 @@ import org.json.JSONException;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class PlayActivity extends AppCompatActivity {
+public class PlayActivity extends AppCompatActivity implements View.OnClickListener {
 
     private Translation currentTranslation;
     private TextView roundsCounter;
     private TextView wrongsCounter;
     private TextView rightsCounter;
+    private boolean roundIsGoing;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,49 +39,40 @@ public class PlayActivity extends AppCompatActivity {
         nextRound();
     }
 
-    public void nextRound() {
-        currentTranslation = null;
+    private void endRound() {
+        roundIsGoing = false;
+        roundTimer().cancel(false);
 
+        findViewById(R.id.right_button).setEnabled(false);
+        findViewById(R.id.wrong_button).setEnabled(false);
+
+        betweenRoundsTimer().execute();
+    }
+
+    public void nextRound() {
+        roundIsGoing = true;
+        findViewById(R.id.right_button).setEnabled(true);
+        findViewById(R.id.wrong_button).setEnabled(true);
+
+        increaseCounter(roundsCounter);
+        roundTimer().execute();
+
+        currentTranslation = null;
         try {
             currentTranslation = getTranslations().getTranslation();
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-        findViewById(R.id.right_button).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!currentTranslation.isCorrect) {
-                    increaseCounter(wrongsCounter);
-                } else {
-                    increaseCounter(rightsCounter);
-                }
-
-                increaseCounter(roundsCounter);
-            }
-        });
-
-        findViewById(R.id.wrong_button).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (currentTranslation.isCorrect) {
-                    increaseCounter(wrongsCounter);
-                } else {
-                    increaseCounter(rightsCounter);
-                }
-
-                increaseCounter(roundsCounter);
-            }
-        });
-
+        findViewById(R.id.right_button).setOnClickListener(this);
+        findViewById(R.id.wrong_button).setOnClickListener(this);
 
         ((TextView) findViewById(R.id.challenge_text)).setText(currentTranslation.challengeWord);
         ((TextView) findViewById(R.id.translation_text)).setText(currentTranslation.translatedWord);
     }
 
-    private void increaseCounter(TextView counterView)
-    {
-        counterView.setText(Integer.parseInt((String) counterView.getText())  + 1 + "");
+    private void increaseCounter(TextView counterView) {
+        counterView.setText(String.format("%d", Integer.parseInt((String) counterView.getText()) + 1));
     }
 
     public Translations getTranslations() throws JSONException {
@@ -95,5 +89,38 @@ public class PlayActivity extends AppCompatActivity {
         }
 
         return new Translations(new JSONArray(words));
+    }
+
+    @Override
+    public void onClick(View v) {
+        if ((currentTranslation.isCorrect && v.getId() == R.id.wrong_button) || (!currentTranslation.isCorrect && v.getId() == R.id.right_button)) {
+            increaseCounter(wrongsCounter);
+        } else {
+            increaseCounter(rightsCounter);
+        }
+
+        endRound();
+    }
+
+    //AsyncTask can be executed only once
+    public Delay roundTimer() {
+        return new Delay(3000) {
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                if (roundIsGoing) {
+                    increaseCounter(wrongsCounter);
+                    endRound();
+                }
+            }
+        };
+    }
+
+    public Delay betweenRoundsTimer() {
+        return new Delay(1000) {
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                nextRound();
+            }
+        };
     }
 }

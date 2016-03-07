@@ -24,7 +24,7 @@
             android:layout_alignParentRight="true"
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
-            android:textColor="@android:color/holo_green_dark"
+            android:textColor="@color/good_feedback"
             android:text="3"
             />
 
@@ -36,22 +36,45 @@
             android:layout_width="wrap_content"
             android:layout_marginEnd="7dp"
             android:layout_marginRight="7dp"
-            android:textColor="@android:color/holo_red_dark"
+            android:textColor="@color/bad_feedback"
             android:text="6"
             />
+
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/translation_text"
+            android:gravity="center"
+            android:padding="7dp"
+            android:textSize="@dimen/primary_text_size"
+            android:background="@color/colorAccent"
+            android:layout_below="@id/rounds_counter"
+            android:text='"Questa è una parola"'
+            />
+
+
+
     </RelativeLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"
+        android:layout_marginTop="100dp"
         android:layout_height="match_parent">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/challenge_text"
-            android:textSize="@dimen/primary_text_size"
-            android:layout_centerInParent="true"
-            android:text="This is a word"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/challenge_text"
+                android:textSize="@dimen/primary_text_size"
+                android:layout_centerHorizontal="true"
+                android:text="This is a word"/>
+
+        </RelativeLayout>
+
 
         <LinearLayout
             android:id="@+id/buttons_panel"
@@ -62,34 +85,15 @@
             android:orientation="horizontal"
             tools:ignore="UselessParent">
 
-            <Button
-                android:id="@+id/wrong_button"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="0.5"
-                android:text="That's wrong!" />
 
-
-            <Button
-                android:id="@+id/right_button"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="0.5"
-                android:text="That's Right!" />
+        <Button
+            android:id="@+id/right_button"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="That's Right!" />
 
         </LinearLayout>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/translation_text"
-            android:gravity="center"
-            android:padding="7dp"
-            android:textSize="@dimen/primary_text_size"
-            android:background="@color/colorAccent"
-            android:layout_above="@id/buttons_panel"
-            android:text='"Questa è una parola"'
-            />
     </RelativeLayout>
 
 </FrameLayout>

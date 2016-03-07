@@ -47,8 +47,7 @@ public class PlayActivityTest {
 
         correctTranslation = new Translation("Challenge word", "Translated word", true);
         wrongTranslation = new Translation("Challenge word", "Translated word", false);
-        doReturn(new Delay(10)).when(activity).roundTimer();
-        doReturn(new Delay(10)).when(activity).betweenRoundsTimer();
+        doReturn(new Delay(0)).when(activity).betweenRoundsTimer();
     }
 
     @Test
@@ -104,16 +103,13 @@ public class PlayActivityTest {
 
         isCorrectButton().performClick();
         assertFalse(isCorrectButton().isEnabled());
-        assertFalse(isWrongButton().isEnabled());
         Thread.sleep(1100);
 
         assertRoundsCounterIs("3");
         assertTrue(isCorrectButton().isEnabled());
-        assertTrue(isWrongButton().isEnabled());
 
         Thread.sleep(3000);
         assertFalse(isCorrectButton().isEnabled());
-        assertFalse(isWrongButton().isEnabled());
 
         assertRoundsCounterIs("4");
         assertWrongWordsCounterIs("3");
@@ -122,35 +118,6 @@ public class PlayActivityTest {
 
     private View isCorrectButton() {
         return activity.findViewById(R.id.right_button);
-    }
-
-    @Test
-    public void wrongButton() throws JSONException {
-
-        when(translations.getTranslation()).thenReturn(
-                correctTranslation,
-                wrongTranslation
-        );
-
-        activity.nextRound();
-
-        isWrongButton().performClick();
-
-        assertRightWordsCounterIs("0");
-        assertWrongWordsCounterIs("1");
-        assertRoundsCounterIs("2");
-
-        activity.nextRound();
-
-        isWrongButton().performClick();
-
-        assertRightWordsCounterIs("1");
-        assertWrongWordsCounterIs("1");
-        assertRoundsCounterIs("3");
-    }
-
-    private View isWrongButton() {
-        return activity.findViewById(R.id.wrong_button);
     }
 
     private void assertRightWordsCounterIs(String expected) {

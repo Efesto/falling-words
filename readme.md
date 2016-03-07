@@ -30,10 +30,10 @@
 The development started with the implementation of a non working interface with Android Studio design.
 **This part required 45 minutes but the design proven to be solid.**
 After design I've started with the effective code writing.
-With TDD in mind I've chosen [Roboelectric](http://robolectric.org/) as the testing framework for testing the most complicated game parts bound to Android SDK and Mockito for dependency injection.
-I've to admit that my knowledge of Roboelectric is not so shining because I've always used the combination of [Calabash-Android](https://github.com/calabash/calabash-android) and AndroidTestCase so it required
+With TDD in mind I've chosen [Robolectric](http://robolectric.org/) as the testing framework for testing the most complicated game parts bound to Android SDK and Mockito for dependency injection.
+I've to admit that my knowledge of Robolectric is not so shining because I've always used the combination of [Calabash-Android](https://github.com/calabash/calabash-android) and AndroidTestCase so it required
 some time to ambient myself and write a first red test concerning the PlayActivity.
-But I've decided to use Roboelectric anyway because Calabash-Android requires long execution times, a working emulator/device and a bit of patience and the time was restricted.
+But I've decided to use Robolectric anyway because Calabash-Android requires long execution times, a working emulator/device and a bit of patience and the time was restricted.
 **Getting confortable with the test framework required 1 hour circa.**
 
 ## Planning refinement

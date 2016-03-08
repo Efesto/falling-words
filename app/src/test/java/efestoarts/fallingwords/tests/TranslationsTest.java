@@ -25,7 +25,7 @@ public class TranslationsTest {
 
 
     @Test
-    public void getRandomTranslation() throws JSONException {
+    public void nextTranslation() throws JSONException {
         JSONObject firstTranslation = new JSONObject();
         firstTranslation.put("text_eng", "pupil");
         firstTranslation.put("text_spa", "alumno / alumna");
@@ -39,24 +39,24 @@ public class TranslationsTest {
         testDictionary.put(secondTranslation);
 
         Translations translations = spy(new Translations(testDictionary));
-        when(translations.getNextWordIndexes()).thenReturn(
-                new int[]{0,1},
-                new int[]{1,0},
-                new int[]{0,0});
+        when(translations.getNextTranslationIndexes()).thenReturn(
+                new int[]{0, 1},
+                new int[]{1, 0},
+                new int[]{0, 0});
 
-        Translation translation = translations.getTranslation();
+        Translation translation = translations.nextTranslation();
 
         assertEquals("pupil", translation.translatedWord);
         assertEquals("vacantiones", translation.challengeWord);
         assertEquals(false, translation.isCorrect);
 
-        translation = translations.getTranslation();
+        translation = translations.nextTranslation();
 
         assertEquals("holidays", translation.translatedWord);
         assertEquals("alumno / alumna", translation.challengeWord);
         assertEquals(false, translation.isCorrect);
 
-        translation = translations.getTranslation();
+        translation = translations.nextTranslation();
 
         assertEquals("pupil", translation.translatedWord);
         assertEquals("alumno / alumna", translation.challengeWord);
@@ -64,7 +64,7 @@ public class TranslationsTest {
     }
 
     @Test
-    public void getNextWordIndex_sometimesIsEqual() throws JSONException {
+    public void getNextTranslationIndexes_sometimesIsEqual() throws JSONException {
         JSONObject aTranslation = new JSONObject();
         aTranslation.put("text_eng", "holidays");
         aTranslation.put("text_spa", "vacantiones");
@@ -75,18 +75,16 @@ public class TranslationsTest {
 
         Translations translations = new Translations(dictionary);
 
-        int sameIndexCounter = 0;
+        int correctTranslationsCounter = 0;
 
-        for (int i = 0; i < 300; i++)
-        {
-            Translation translation = translations.getTranslation();
+        for (int i = 0; i < 300; i++) {
+            Translation translation = translations.nextTranslation();
 
-            if (translation.isCorrect)
-            {
-                sameIndexCounter++;
+            if (translation.isCorrect) {
+                correctTranslationsCounter++;
             }
         }
 
-        assertEquals(100, sameIndexCounter, 30);
+        assertEquals(100, correctTranslationsCounter, 30);
     }
 }

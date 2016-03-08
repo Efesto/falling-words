@@ -1,7 +1,6 @@
 package efestoarts.fallingwords;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Calendar;
@@ -16,25 +15,34 @@ public class Translations {
         this.dictionary = dictionary;
     }
 
-    public Translation getTranslation() throws JSONException {
-        int[] translationIndexes = getNextWordIndexes();
+    public Translation nextTranslation() {
 
-        JSONObject firstPair = (JSONObject)dictionary.get(translationIndexes[0]);
-        String translationWord = firstPair.getString("text_eng");
+        try {
+            int[] translationIndexes = getNextTranslationIndexes();
 
-        JSONObject secondPair = (JSONObject)dictionary.get(translationIndexes[1]);
-        String challengeWord = secondPair.getString("text_spa");
+            JSONObject firstPair = (JSONObject) dictionary.get(translationIndexes[0]);
 
-        boolean isCorrect = translationIndexes[0] == translationIndexes[1];
-        return new Translation(challengeWord, translationWord, isCorrect);
+            String translationWord = firstPair.getString("text_eng");
+
+            JSONObject secondPair = (JSONObject) dictionary.get(translationIndexes[1]);
+            String challengeWord = secondPair.getString("text_spa");
+
+            boolean isCorrect = translationIndexes[0] == translationIndexes[1];
+            return new Translation(challengeWord, translationWord, isCorrect);
+        } catch (Exception e)
+        {
+            throw new RuntimeException(e);
+        }
     }
 
-    public int[] getNextWordIndexes() {
-        int randomWordIndex1 = random.nextInt(dictionary.length() - 1);
-        int randomWordIndex2 = random.nextInt(dictionary.length() - 1);
+    public int[] getNextTranslationIndexes() {
+        int upperIndex = dictionary.length();
+        int randomWordIndex1 = random.nextInt(upperIndex);
+        int randomWordIndex2 = random.nextInt(upperIndex);
 
-        int tweakFactor = 3;
-        if (random.nextInt(tweakFactor) == random.nextInt(tweakFactor))
+        //About 1/randomFactor of the translations are corrects
+        int randomFactor = 3;
+        if (random.nextInt(randomFactor) == 0)
         {
             randomWordIndex1 = randomWordIndex2;
         }

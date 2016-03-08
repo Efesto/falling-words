@@ -59,7 +59,7 @@ From here going on I've moved using mainly hand feedback because the time was ru
 
 ## Ending and last refinements
 
-**The last hour was used to write documentation, introducing the animation in the falling words (until this phase everything was static) and revisiting some small interface elements like colors**
+**The last hour and half was used to write documentation, introducing the animation in the falling words (until this phase everything was static) and revisiting some small interface elements like colors**
 At last I've also decided to remove the wrong button in favor of the only "That's correct" button.
 Also the wrong translation falling out the screen is counted as "Correct" and the good translation doing the same is counted as "Wrong".
 I've find this approach to be radically different from the previous "always say something" approach in best.
@@ -69,9 +69,12 @@ I've find this approach to be radically different from the previous "always say 
 My first concerns would be about the automated tests because as I've left them they're mostly useless but I'm pretty sure that with a better design they could prove useful again.
 After them could be great to have:
 * Some sounds for feedback (no music of course)
+* Some more emphatic animations or graphics for the Yeah/Nope feedback
 * An End Game screen with game stats report, maybe with a small hall of fame.
 * The possibility of having different languages, to choose between them and having the translations by a remote service
 ** maybe with something like a "Spanish vs German" screen in Street Fighter style.
+* Trying another testing framework, maybe the Android Instrumented tests and/or Espresso using a fast emulator like Genymotion (instead of the, current stable, super slow Google one)
+** (I'm pretty sure my testing way will change with the newer Google emulator but who can say?)
 
 
 

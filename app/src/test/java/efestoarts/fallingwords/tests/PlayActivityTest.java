@@ -55,7 +55,7 @@ public class PlayActivityTest {
     @Test
     public void appearance() throws JSONException {
 
-        when(translations.getTranslation()).thenReturn(
+        when(translations.nextTranslation()).thenReturn(
                 correctTranslation
         );
 
@@ -70,7 +70,7 @@ public class PlayActivityTest {
 
     @Test
     public void rightButton() throws JSONException {
-        when(translations.getTranslation()).thenReturn(
+        when(translations.nextTranslation()).thenReturn(
                 correctTranslation,
                 wrongTranslation
         );
@@ -96,7 +96,7 @@ public class PlayActivityTest {
 
         initActivity();
 
-        when(translations.getTranslation()).thenReturn(
+        when(translations.nextTranslation()).thenReturn(
                 correctTranslation,
                 correctTranslation
         );

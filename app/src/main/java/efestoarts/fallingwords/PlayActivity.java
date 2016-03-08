@@ -5,13 +5,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.Button;
 import android.widget.TextView;
 
 import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
-import org.json.JSONException;
 
-import java.io.IOException;
 import java.io.InputStream;
 
 public class PlayActivity extends AppCompatActivity implements View.OnClickListener {
@@ -23,6 +22,7 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
     private Animation fallingWordAnimation;
     private TextView challengeWord;
     private boolean roundIsPlaying;
+    private Button translationIsCorrectButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,6 +31,8 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_play);
 
         challengeWord = (TextView) findViewById(R.id.challenge_text);
+
+        translationIsCorrectButton = (Button)findViewById(R.id.right_button);
 
         roundsCounter = (TextView) findViewById(R.id.rounds_counter);
         wrongsCounter = (TextView) findViewById(R.id.wrong_words_counter);
@@ -67,6 +69,23 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         nextRound();
     }
 
+    public void nextRound() {
+        roundIsPlaying = true;
+        findViewById(R.id.right_button).setEnabled(true);
+
+        increaseTextViewCounter(roundsCounter);
+
+        currentTranslation = getTranslations().nextTranslation();
+
+        translationIsCorrectButton.setOnClickListener(this);
+
+        challengeWord.setText(currentTranslation.challengeWord);
+        challengeWord.setVisibility(View.VISIBLE);
+        challengeWord.startAnimation(fallingWordAnimation);
+
+        ((TextView) findViewById(R.id.translation_text)).setText(currentTranslation.translatedWord);
+    }
+
     private void endRound() {
         if (roundIsPlaying) {
             roundIsPlaying = false;
@@ -74,53 +93,30 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
             challengeWord.clearAnimation();
             challengeWord.setVisibility(View.INVISIBLE);
 
-            findViewById(R.id.right_button).setEnabled(false);
+            translationIsCorrectButton.setEnabled(false);
 
             betweenRoundsTimer().execute();
         }
     }
 
-    public void nextRound() {
-        roundIsPlaying = true;
-        findViewById(R.id.right_button).setEnabled(true);
-
-        increaseTextViewCounter(roundsCounter);
-
-        currentTranslation = null;
-        try {
-            currentTranslation = getTranslations().getTranslation();
-        } catch (JSONException e) {
-            e.printStackTrace();
-
-            //We don't like code that doesn't says what's wrong
-            throw new RuntimeException(e);
-        }
-
-        findViewById(R.id.right_button).setOnClickListener(this);
-
-        challengeWord.setVisibility(View.VISIBLE);
-        challengeWord.setText(currentTranslation.challengeWord);
-        challengeWord.startAnimation(fallingWordAnimation);
-
-        ((TextView) findViewById(R.id.translation_text)).setText(currentTranslation.translatedWord);
-    }
-
-    public Translations getTranslations() throws JSONException {
-        String words = null;
+    //This allows dependency injection of translations
+    //Stream reading could be easily cached but is not a performance issue at the moment
+    public Translations getTranslations(){
         InputStream inputStream = null;
         try {
             inputStream = getResources().openRawResource(R.raw.words);
 
-            words = IOUtils.toString(inputStream);
-        } catch (IOException e) {
+            String words = IOUtils.toString(inputStream);
+            return new Translations(new JSONArray(words));
+        } catch (Exception e) {
             e.printStackTrace();
+
             //We don't like code that doesn't says what's wrong
             throw new RuntimeException(e);
+
         } finally {
             IOUtils.closeQuietly(inputStream);
         }
-
-        return new Translations(new JSONArray(words));
     }
 
     @Override

@@ -8,10 +8,12 @@
         android:layout_width="match_parent"
         android:background="@color/colorPrimaryDark"
         android:gravity="center_vertical"
-        android:padding="7dp"
         android:layout_height="wrap_content">
 
         <TextView android:id="@+id/rounds_counter"
+
+            android:paddingLeft="10dp"
+            android:paddingStart="10dp"
             android:textSize="@dimen/primary_text_size"
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
@@ -19,6 +21,9 @@
             />
 
         <TextView android:id="@+id/right_words_counter"
+
+            android:paddingRight="10dp"
+            android:paddingEnd="10dp"
             android:textSize="@dimen/primary_text_size"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
@@ -52,16 +57,11 @@
             android:text='"Questa è una parola"'
             />
 
-
-
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_marginTop="100dp"
-        android:layout_height="match_parent">
         <RelativeLayout
             android:layout_width="match_parent"
+            android:layout_marginBottom="120dp"
+            android:layout_marginTop="100dp"
+            android:background="@android:color/white"
             android:layout_height="match_parent">
 
             <TextView
@@ -74,25 +74,13 @@
 
         </RelativeLayout>
 
-
-        <LinearLayout
-            android:id="@+id/buttons_panel"
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:layout_alignParentBottom="true"
-            android:background="@color/colorPrimaryDark"
-            android:orientation="horizontal"
-            tools:ignore="UselessParent">
-
-
         <Button
-            android:id="@+id/right_button"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:text="That's Right!" />
+            android:id="@+id/correct_translation_button"
+            android:layout_width="match_parent"
+            android:layout_height="120dp"
+            android:layout_alignParentBottom="true"
+            android:text="That's a correct translation!" />
 
-        </LinearLayout>
+
     </RelativeLayout>
-
 </FrameLayout>

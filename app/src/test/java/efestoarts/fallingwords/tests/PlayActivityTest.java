@@ -119,7 +119,7 @@ public class PlayActivityTest {
     }
 
     private View isCorrectButton() {
-        return activity.findViewById(R.id.right_button);
+        return activity.findViewById(R.id.correct_translation_button);
     }
 
     private void assertRightWordsCounterIs(String expected) {

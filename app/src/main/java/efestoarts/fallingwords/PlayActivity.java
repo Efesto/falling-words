@@ -32,7 +32,7 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
 
         challengeWord = (TextView) findViewById(R.id.challenge_text);
 
-        translationIsCorrectButton = (Button)findViewById(R.id.right_button);
+        translationIsCorrectButton = (Button)findViewById(R.id.correct_translation_button);
 
         roundsCounter = (TextView) findViewById(R.id.rounds_counter);
         wrongsCounter = (TextView) findViewById(R.id.wrong_words_counter);
@@ -71,7 +71,7 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
 
     public void nextRound() {
         roundIsPlaying = true;
-        findViewById(R.id.right_button).setEnabled(true);
+        findViewById(R.id.correct_translation_button).setEnabled(true);
 
         increaseTextViewCounter(roundsCounter);
 

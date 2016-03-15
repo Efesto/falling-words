@@ -31,7 +31,7 @@
 ## And so came the code
 
 The development started with the implementation of a non working interface with Android Studio design.
-** This part required 45 minutes but the design proved to be solid.**
+**This part required 45 minutes but the design proved to be solid.**
 After design I've started with the effective code writing.
 
 With TDD in mind I've chosen [Robolectric](http://robolectric.org/) as the testing framework for testing the most complicated game parts bound to Android SDK, and Mockito for dependency injection.

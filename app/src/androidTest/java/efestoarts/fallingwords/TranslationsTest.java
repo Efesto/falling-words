@@ -1,28 +1,22 @@
-package efestoarts.fallingwords.tests;
+package efestoarts.fallingwords;
+
+import android.support.test.runner.AndroidJUnit4;
+import android.test.suitebuilder.annotation.SmallTest;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RobolectricTestRunner;
-import org.robolectric.annotation.Config;
-
-import efestoarts.fallingwords.BuildConfig;
-import efestoarts.fallingwords.Translation;
-import efestoarts.fallingwords.Translations;
+import org.mockito.Matchers;
+import org.mockito.Mockito;
 
 import static junit.framework.Assert.assertEquals;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
 
 
-@RunWith(RobolectricTestRunner.class)
-@Config(sdk = 21, constants = BuildConfig.class)
+@RunWith(AndroidJUnit4.class)
+@SmallTest
 public class TranslationsTest {
-
 
     @Test
     public void nextTranslation() throws JSONException {
@@ -38,8 +32,8 @@ public class TranslationsTest {
         testDictionary.put(firstTranslation);
         testDictionary.put(secondTranslation);
 
-        Translations translations = spy(new Translations(testDictionary));
-        when(translations.getNextTranslationIndexes()).thenReturn(
+        Translations translations = Mockito.spy(new Translations(testDictionary));
+        Mockito.when(translations.getNextTranslationIndexes()).thenReturn(
                 new int[]{0, 1},
                 new int[]{1, 0},
                 new int[]{0, 0});
@@ -69,9 +63,9 @@ public class TranslationsTest {
         aTranslation.put("text_eng", "holidays");
         aTranslation.put("text_spa", "vacantiones");
 
-        JSONArray dictionary = mock(JSONArray.class);
-        when(dictionary.length()).thenReturn(100);
-        when(dictionary.get(anyInt())).thenReturn(aTranslation);
+        JSONArray dictionary = Mockito.mock(JSONArray.class);
+        Mockito.when(dictionary.length()).thenReturn(100);
+        Mockito.when(dictionary.get(Matchers.anyInt())).thenReturn(aTranslation);
 
         Translations translations = new Translations(dictionary);
 

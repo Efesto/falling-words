@@ -103,18 +103,8 @@ public class PlayActivity extends AppCompatActivity {
 
             translationIsCorrectButton.setEnabled(false);
 
-            betweenRoundsTimer().execute();
+            presenter.roundEnded();
         }
-    }
-
-    //AsyncTask can be executed only once so we need to build a new one every time we need one
-    public Delay betweenRoundsTimer() {
-        return new Delay(1000) {
-            @Override
-            protected void onPostExecute(Void aVoid) {
-                presenter.roundEnded();
-            }
-        };
     }
 
     private void increaseTextViewCounter(TextView counterView) {

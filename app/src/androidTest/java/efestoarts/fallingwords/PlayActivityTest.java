@@ -1,5 +1,7 @@
 package efestoarts.fallingwords;
 
+import android.content.Intent;
+import android.support.test.InstrumentationRegistry;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.suitebuilder.annotation.LargeTest;
@@ -31,27 +33,30 @@ public class PlayActivityTest {
     private Translation wrongTranslation;
 
     @Rule
-    public ActivityTestRule<PlayActivity> activityTestRule = new ActivityTestRule<>(PlayActivity.class);
+    public ActivityTestRule<PlayActivity> activityTestRule = new ActivityTestRule<>(PlayActivity.class, true, false);
 
     @Mock
     Translations mockedTranslations;
 
-    private void initActivity() throws JSONException {
-        activity = activityTestRule.getActivity();
-    }
+    @Mock
+    Presenter mockedPresenter;
 
     @Before
     public void before() throws JSONException {
-        initActivity();
+
         MockitoAnnotations.initMocks(this);
+
+        ((FallingWordsApp) InstrumentationRegistry.getTargetContext().getApplicationContext()).setPresenter(mockedPresenter);
+
+        activityTestRule.launchActivity(new Intent());
+        activity = activityTestRule.getActivity();
 
         correctTranslation = new Translation("Challenge word", "Translated word", true);
         wrongTranslation = new Translation("Challenge word", "Translated word", false);
     }
 
     @Test
-    public void appearance() throws JSONException {
-
+    public void on_next_round() throws JSONException {
         activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -61,41 +66,47 @@ public class PlayActivityTest {
 
         assertRightWordsCounterIs("0");
         assertWrongWordsCounterIs("0");
-        assertRoundsCounterIs("2");
+        assertRoundsCounterIs("1");
         assertViewHasText(R.id.translation_text, "Translated word");
         assertViewHasText(R.id.challenge_text, "Challenge word");
     }
 
     @Test
-    public void rightButton() throws JSONException {
+    public void press_is_right_button_with_correct_translation() {
         activity.runOnUiThread(
                 new Runnable() {
                     @Override
                     public void run() {
                         activity.nextRound(correctTranslation);
                         isCorrectButton().performClick();
+                    }
+                });
 
-                        assertRightWordsCounterIs("1");
-                        assertWrongWordsCounterIs("0");
-                        assertRoundsCounterIs("2");
+        assertRightWordsCounterIs("1");
+        assertWrongWordsCounterIs("0");
+        assertRoundsCounterIs("1");
+    }
 
+    @Test
+    public void press_is_right_button_with_wrong_translation() {
+        activity.runOnUiThread(
+                new Runnable() {
+                    @Override
+                    public void run() {
                         activity.nextRound(wrongTranslation);
                         isCorrectButton().performClick();
-
-                        assertRightWordsCounterIs("1");
-                        assertWrongWordsCounterIs("1");
-                        assertRoundsCounterIs("3");
                     }
                 }
         );
+
+        assertRightWordsCounterIs("0");
+        assertWrongWordsCounterIs("1");
+        assertRoundsCounterIs("1");
     }
 
     @Test
     @Ignore("This little cocky test requires some RXJava")
     public void timeDelays() throws JSONException, InterruptedException {
-
-        initActivity();
-
         when(mockedTranslations.nextTranslation()).thenReturn(
                 correctTranslation,
                 correctTranslation
@@ -134,8 +145,7 @@ public class PlayActivityTest {
         assertViewHasText(R.id.rounds_counter, expected);
     }
 
-    private void assertViewHasText(int viewId, String expectedText)
-    {
+    private void assertViewHasText(int viewId, String expectedText) {
         onView(withId(viewId)).check(matches(withText(expectedText)));
     }
 

@@ -20,6 +20,11 @@ public class FallingWordsApp extends Application {
         return presenter;
     }
 
+    public void setPresenter(Presenter presenter)
+    {
+        this.presenter = presenter;
+    }
+
     private Translations getTranslations() {
         if(translations == null) {
             InputStream inputStream = null;
@@ -39,10 +44,5 @@ public class FallingWordsApp extends Application {
             }
         }
         return translations;
-    }
-
-    public void setTranslations(Translations translations)
-    {
-        this.translations = translations;
     }
 }

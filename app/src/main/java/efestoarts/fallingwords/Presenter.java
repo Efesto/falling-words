@@ -15,6 +15,11 @@ public class Presenter {
     }
 
     public void roundEnded() {
-        activity.nextRound(translations.nextTranslation());
+        new Delay(1000) {
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                activity.nextRound(translations.nextTranslation());
+            }
+        }.execute();
     }
 }

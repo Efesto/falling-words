@@ -11,6 +11,8 @@ import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
@@ -18,9 +20,6 @@ import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
 @RunWith(AndroidJUnit4.class)
@@ -28,68 +27,59 @@ import static org.mockito.Mockito.when;
 public class PlayActivityTest {
 
     PlayActivity activity;
-    private Translations translations;
     private Translation correctTranslation;
     private Translation wrongTranslation;
 
     @Rule
     public ActivityTestRule<PlayActivity> activityTestRule = new ActivityTestRule<>(PlayActivity.class);
 
+    @Mock
+    Translations mockedTranslations;
+
     private void initActivity() throws JSONException {
-        activity = spy(activityTestRule.getActivity());
-        translations = mock(Translations.class);
-        doReturn(translations).when(activity).getTranslations();
+        activity = activityTestRule.getActivity();
     }
 
     @Before
     public void before() throws JSONException {
         initActivity();
+        MockitoAnnotations.initMocks(this);
 
         correctTranslation = new Translation("Challenge word", "Translated word", true);
         wrongTranslation = new Translation("Challenge word", "Translated word", false);
-        when(activity.betweenRoundsTimer()).thenReturn(new Delay(10));
     }
 
     @Test
     public void appearance() throws JSONException {
 
-        when(translations.nextTranslation()).thenReturn(
-                correctTranslation
-        );
-
         activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                activity.nextRound();
-
-                assertRightWordsCounterIs("0");
-                assertWrongWordsCounterIs("0");
-                assertRoundsCounterIs("2");
-                assertViewHasText(R.id.translation_text, "Translated word");
-                assertViewHasText(R.id.challenge_text, "Challenge word");
+                activity.nextRound(correctTranslation);
             }
         });
+
+        assertRightWordsCounterIs("0");
+        assertWrongWordsCounterIs("0");
+        assertRoundsCounterIs("2");
+        assertViewHasText(R.id.translation_text, "Translated word");
+        assertViewHasText(R.id.challenge_text, "Challenge word");
     }
 
     @Test
     public void rightButton() throws JSONException {
-        when(translations.nextTranslation()).thenReturn(
-                correctTranslation,
-                wrongTranslation
-        );
-
         activity.runOnUiThread(
                 new Runnable() {
                     @Override
                     public void run() {
-                        activity.nextRound();
+                        activity.nextRound(correctTranslation);
                         isCorrectButton().performClick();
 
                         assertRightWordsCounterIs("1");
                         assertWrongWordsCounterIs("0");
                         assertRoundsCounterIs("2");
 
-                        activity.nextRound();
+                        activity.nextRound(wrongTranslation);
                         isCorrectButton().performClick();
 
                         assertRightWordsCounterIs("1");
@@ -106,12 +96,12 @@ public class PlayActivityTest {
 
         initActivity();
 
-        when(translations.nextTranslation()).thenReturn(
+        when(mockedTranslations.nextTranslation()).thenReturn(
                 correctTranslation,
                 correctTranslation
         );
 
-        activity.nextRound();
+        activity.nextRound(correctTranslation);
 
         isCorrectButton().performClick();
         assertFalse(isCorrectButton().isEnabled());

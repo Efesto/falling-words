@@ -26,6 +26,8 @@ public class PlayActivity extends AppCompatActivity {
     @Bind(R.id.challenge_text) TextView challengeWord;
     @Bind(R.id.translation_text) TextView translationWord;
     @Bind(R.id.correct_translation_button) Button translationIsCorrectButton;
+    private Presenter presenter;
+
     @OnClick(R.id.correct_translation_button) void clickOnCorrectButton() {
         if (currentTranslation.isCorrect) {
             increaseTextViewCounter(rightsCounter);
@@ -45,6 +47,7 @@ public class PlayActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_play);
         ButterKnife.bind(this);
+        presenter = ((FallingWordsApp) getApplication()).getPresenter();
 
         roundsCounter.setText("0");
         wrongsCounter.setText("0");
@@ -74,16 +77,15 @@ public class PlayActivity extends AppCompatActivity {
             }
         });
 
-        nextRound();
+        presenter.resume(this);
     }
 
-    public void nextRound() {
+    public void nextRound(Translation nextTranslation) {
+        currentTranslation = nextTranslation;
         roundIsPlaying = true;
         translationIsCorrectButton.setEnabled(true);
 
         increaseTextViewCounter(roundsCounter);
-
-        currentTranslation = getTranslations().nextTranslation();
 
         challengeWord.setText(currentTranslation.challengeWord);
         challengeWord.setVisibility(View.VISIBLE);
@@ -105,32 +107,12 @@ public class PlayActivity extends AppCompatActivity {
         }
     }
 
-    //This allows dependency injection of translations
-    //Stream reading could be easily cached but is not a performance issue at the moment
-    public Translations getTranslations(){
-        InputStream inputStream = null;
-        try {
-            inputStream = getResources().openRawResource(R.raw.words);
-
-            String words = IOUtils.toString(inputStream);
-            return new Translations(new JSONArray(words));
-        } catch (Exception e) {
-            e.printStackTrace();
-
-            //We don't like code that doesn't says what's wrong
-            throw new RuntimeException(e);
-
-        } finally {
-            IOUtils.closeQuietly(inputStream);
-        }
-    }
-
     //AsyncTask can be executed only once so we need to build a new one every time we need one
     public Delay betweenRoundsTimer() {
         return new Delay(1000) {
             @Override
             protected void onPostExecute(Void aVoid) {
-                nextRound();
+                presenter.roundEnded();
             }
         };
     }

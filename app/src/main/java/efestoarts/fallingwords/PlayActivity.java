@@ -10,33 +10,41 @@ import android.widget.TextView;
 
 import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
+import org.w3c.dom.Text;
 
 import java.io.InputStream;
 
-public class PlayActivity extends AppCompatActivity implements View.OnClickListener {
+import butterknife.Bind;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 
-    private Translation currentTranslation;
-    private TextView roundsCounter;
-    private TextView wrongsCounter;
-    private TextView rightsCounter;
-    private Animation fallingWordAnimation;
-    private TextView challengeWord;
+public class PlayActivity extends AppCompatActivity {
+
+    @Bind(R.id.rounds_counter) TextView roundsCounter;
+    @Bind(R.id.wrong_words_counter) TextView wrongsCounter;
+    @Bind(R.id.right_words_counter) TextView rightsCounter;
+    @Bind(R.id.challenge_text) TextView challengeWord;
+    @Bind(R.id.translation_text) TextView translationWord;
+    @Bind(R.id.correct_translation_button) Button translationIsCorrectButton;
+    @OnClick(R.id.correct_translation_button) void clickOnCorrectButton() {
+        if (currentTranslation.isCorrect) {
+            increaseTextViewCounter(rightsCounter);
+        } else {
+            increaseTextViewCounter(wrongsCounter);
+        }
+
+        endRound();
+    }
+
     private boolean roundIsPlaying;
-    private Button translationIsCorrectButton;
+    private Translation currentTranslation;
+    private Animation fallingWordAnimation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_play);
-
-        challengeWord = (TextView) findViewById(R.id.challenge_text);
-
-        translationIsCorrectButton = (Button)findViewById(R.id.correct_translation_button);
-
-        roundsCounter = (TextView) findViewById(R.id.rounds_counter);
-        wrongsCounter = (TextView) findViewById(R.id.wrong_words_counter);
-        rightsCounter = (TextView) findViewById(R.id.right_words_counter);
+        ButterKnife.bind(this);
 
         roundsCounter.setText("0");
         wrongsCounter.setText("0");
@@ -71,19 +79,17 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
 
     public void nextRound() {
         roundIsPlaying = true;
-        findViewById(R.id.correct_translation_button).setEnabled(true);
+        translationIsCorrectButton.setEnabled(true);
 
         increaseTextViewCounter(roundsCounter);
 
         currentTranslation = getTranslations().nextTranslation();
 
-        translationIsCorrectButton.setOnClickListener(this);
-
         challengeWord.setText(currentTranslation.challengeWord);
         challengeWord.setVisibility(View.VISIBLE);
         challengeWord.startAnimation(fallingWordAnimation);
 
-        ((TextView) findViewById(R.id.translation_text)).setText(currentTranslation.translatedWord);
+        translationWord.setText(currentTranslation.translatedWord);
     }
 
     private void endRound() {
@@ -117,17 +123,6 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         } finally {
             IOUtils.closeQuietly(inputStream);
         }
-    }
-
-    @Override
-    public void onClick(View v) {
-        if (currentTranslation.isCorrect) {
-            increaseTextViewCounter(rightsCounter);
-        } else {
-            increaseTextViewCounter(wrongsCounter);
-        }
-
-        endRound();
     }
 
     //AsyncTask can be executed only once so we need to build a new one every time we need one

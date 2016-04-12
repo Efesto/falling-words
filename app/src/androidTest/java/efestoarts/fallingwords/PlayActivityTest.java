@@ -1,25 +1,21 @@
-package efestoarts.fallingwords.tests;
+package efestoarts.fallingwords;
 
+import android.support.test.rule.ActivityTestRule;
+import android.support.test.runner.AndroidJUnit4;
+import android.test.suitebuilder.annotation.LargeTest;
 import android.view.View;
-import android.widget.TextView;
 
 import org.json.JSONException;
 import org.junit.Before;
 import org.junit.Ignore;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.Robolectric;
-import org.robolectric.RobolectricTestRunner;
-import org.robolectric.annotation.Config;
 
-import efestoarts.fallingwords.BuildConfig;
-import efestoarts.fallingwords.Delay;
-import efestoarts.fallingwords.PlayActivity;
-import efestoarts.fallingwords.R;
-import efestoarts.fallingwords.Translation;
-import efestoarts.fallingwords.Translations;
-
-import static junit.framework.Assert.assertEquals;
+import static android.support.test.espresso.Espresso.onView;
+import static android.support.test.espresso.assertion.ViewAssertions.matches;
+import static android.support.test.espresso.matcher.ViewMatchers.withId;
+import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
@@ -27,9 +23,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
-@RunWith(RobolectricTestRunner.class)
-@Ignore("These requires some redesign of the activity because the delays screws the execution")
-@Config(sdk = 21, constants = BuildConfig.class)
+@RunWith(AndroidJUnit4.class)
+@LargeTest
 public class PlayActivityTest {
 
     PlayActivity activity;
@@ -37,8 +32,11 @@ public class PlayActivityTest {
     private Translation correctTranslation;
     private Translation wrongTranslation;
 
+    @Rule
+    public ActivityTestRule<PlayActivity> activityTestRule = new ActivityTestRule<>(PlayActivity.class);
+
     private void initActivity() throws JSONException {
-        activity = spy(Robolectric.setupActivity(PlayActivity.class));
+        activity = spy(activityTestRule.getActivity());
         translations = mock(Translations.class);
         doReturn(translations).when(activity).getTranslations();
     }
@@ -59,13 +57,18 @@ public class PlayActivityTest {
                 correctTranslation
         );
 
-        activity.nextRound();
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.nextRound();
 
-        assertRightWordsCounterIs("0");
-        assertWrongWordsCounterIs("0");
-        assertRoundsCounterIs("2");
-        assertEquals("Translated word", ((TextView) activity.findViewById(R.id.translation_text)).getText());
-        assertEquals("Challenge word", ((TextView) activity.findViewById(R.id.challenge_text)).getText());
+                assertRightWordsCounterIs("0");
+                assertWrongWordsCounterIs("0");
+                assertRoundsCounterIs("2");
+                assertViewHasText(R.id.translation_text, "Translated word");
+                assertViewHasText(R.id.challenge_text, "Challenge word");
+            }
+        });
     }
 
     @Test
@@ -75,23 +78,30 @@ public class PlayActivityTest {
                 wrongTranslation
         );
 
-        activity.nextRound();
+        activity.runOnUiThread(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        activity.nextRound();
+                        isCorrectButton().performClick();
 
-        isCorrectButton().performClick();
+                        assertRightWordsCounterIs("1");
+                        assertWrongWordsCounterIs("0");
+                        assertRoundsCounterIs("2");
 
-        assertRightWordsCounterIs("1");
-        assertWrongWordsCounterIs("0");
-        assertRoundsCounterIs("2");
-        activity.nextRound();
+                        activity.nextRound();
+                        isCorrectButton().performClick();
 
-        isCorrectButton().performClick();
-
-        assertRightWordsCounterIs("1");
-        assertWrongWordsCounterIs("1");
-        assertRoundsCounterIs("3");
+                        assertRightWordsCounterIs("1");
+                        assertWrongWordsCounterIs("1");
+                        assertRoundsCounterIs("3");
+                    }
+                }
+        );
     }
 
     @Test
+    @Ignore("This little cocky test requires some RXJava")
     public void timeDelays() throws JSONException, InterruptedException {
 
         initActivity();
@@ -123,15 +133,20 @@ public class PlayActivityTest {
     }
 
     private void assertRightWordsCounterIs(String expected) {
-        assertEquals(expected, ((TextView) activity.findViewById(R.id.right_words_counter)).getText());
+        assertViewHasText(R.id.right_words_counter, expected);
     }
 
     private void assertWrongWordsCounterIs(String expected) {
-        assertEquals(expected, ((TextView) activity.findViewById(R.id.wrong_words_counter)).getText());
+        assertViewHasText(R.id.wrong_words_counter, expected);
     }
 
     private void assertRoundsCounterIs(String expected) {
-        assertEquals(expected, ((TextView) activity.findViewById(R.id.rounds_counter)).getText());
+        assertViewHasText(R.id.rounds_counter, expected);
+    }
+
+    private void assertViewHasText(int viewId, String expectedText)
+    {
+        onView(withId(viewId)).check(matches(withText(expectedText)));
     }
 
 

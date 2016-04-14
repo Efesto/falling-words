@@ -1,25 +1,33 @@
 package efestoarts.fallingwords;
 
+import rx.functions.Action1;
+
 public class Presenter {
 
-    private PlayActivity activity;
     private Translations translations;
+    private RxBus bus;
 
-    public Presenter(Translations translations) {
+    public Presenter(Translations translations, RxBus bus) {
         this.translations = translations;
-    }
+        this.bus = bus;
 
-    public void resume(PlayActivity activity) {
-        this.activity = activity;
-        activity.nextRound(translations.nextTranslation());
-    }
-
-    public void roundEnded() {
-        new Delay(1000) {
+        bus.toObservable().subscribe(new Action1<Object>() {
             @Override
-            protected void onPostExecute(Void aVoid) {
-                activity.nextRound(translations.nextTranslation());
+            public void call(Object o) {
+                if (o.equals("ActivityReady"))
+                {
+                    Presenter.this.bus.send(Presenter.this.translations.nextTranslation());
+                }
+                else if(o.equals("RoundEnded"))
+                {
+                    new Delay(1000) {
+                        @Override
+                        protected void onPostExecute(Void aVoid) {
+                            Presenter.this.bus.send(Presenter.this.translations.nextTranslation());
+                        }
+                    }.execute();
+                }
             }
-        }.execute();
+        });
     }
 }

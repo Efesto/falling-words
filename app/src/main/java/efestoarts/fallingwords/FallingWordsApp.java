@@ -11,18 +11,24 @@ public class FallingWordsApp extends Application {
 
     private Translations translations;
     private Presenter presenter;
+    private RxBus bus;
 
-    public Presenter getPresenter()
-    {
+    @Override
+    public void onCreate() {
+        super.onCreate();
+
         if (presenter == null) {
-            presenter = new Presenter(getTranslations());
+            presenter = new Presenter(getTranslations(), getBus());
         }
-        return presenter;
     }
 
-    public void setPresenter(Presenter presenter)
+    public RxBus getBus()
     {
-        this.presenter = presenter;
+        if (bus == null)
+        {
+            bus = new RxBus();
+        }
+        return bus;
     }
 
     private Translations getTranslations() {

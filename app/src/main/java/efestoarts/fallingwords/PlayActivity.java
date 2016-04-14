@@ -17,6 +17,8 @@ import java.io.InputStream;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import rx.Subscription;
+import rx.functions.Action1;
 
 public class PlayActivity extends AppCompatActivity {
 
@@ -26,7 +28,8 @@ public class PlayActivity extends AppCompatActivity {
     @Bind(R.id.challenge_text) TextView challengeWord;
     @Bind(R.id.translation_text) TextView translationWord;
     @Bind(R.id.correct_translation_button) Button translationIsCorrectButton;
-    private Presenter presenter;
+    private Subscription subscription;
+    private RxBus bus;
 
     @OnClick(R.id.correct_translation_button) void clickOnCorrectButton() {
         if (currentTranslation.isCorrect) {
@@ -47,7 +50,6 @@ public class PlayActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_play);
         ButterKnife.bind(this);
-        presenter = ((FallingWordsApp) getApplication()).getPresenter();
 
         roundsCounter.setText("0");
         wrongsCounter.setText("0");
@@ -77,7 +79,25 @@ public class PlayActivity extends AppCompatActivity {
             }
         });
 
-        presenter.resume(this);
+        bus = ((FallingWordsApp) getApplication()).getBus();
+
+        subscription = bus.toObservable().subscribe(new Action1<Object>() {
+            @Override
+            public void call(Object o) {
+                if(o.getClass() == Translation.class)
+                {
+                    nextRound((Translation) o);
+                }
+            }
+        });
+
+        bus.send("ActivityReady");
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        subscription.unsubscribe();
     }
 
     public void nextRound(Translation nextTranslation) {
@@ -102,8 +122,7 @@ public class PlayActivity extends AppCompatActivity {
             challengeWord.setVisibility(View.INVISIBLE);
 
             translationIsCorrectButton.setEnabled(false);
-
-            presenter.roundEnded();
+            bus.send("RoundEnded");
         }
     }
 
